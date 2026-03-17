@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 
-from controllers import boroughs, payment_types, rate_codes, service_zones, vendors
+from controllers import boroughs, payment_types, rate_codes, service_zones, vendors, zones
 
 app = Flask(__name__)
 
@@ -27,6 +27,7 @@ app.add_url_rule('/api/v1/rate_codes/<rate_code_id>', 'edit_rate_code',
                                   methods=['PATCH'])
 
 app.add_url_rule('/api/v1/service_zones', 'get_service_zones', service_zones.get_service_zones)
+app.add_url_rule('/api/v1/zones', 'get_zones', zones.get_zones)
 app.add_url_rule('/api/v1/vendors', 'get_vendors', vendors.get_vendors)
 
 
