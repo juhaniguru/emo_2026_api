@@ -1,32 +1,33 @@
 from psycopg2.extras import RealDictCursor
 
 from custom_exceptions import CustomException
-from repositories.pt_abc_repository import PtRepository
+from repositories.rt_abc_repository import RtRepository
 
 
-class PtPgRepository(PtRepository):
+class RtPgRepository(RtRepository):
 
     def __init__(self, conn):
         self.conn = conn
 
     def get_all(self):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cursor:
-            cursor.execute("SELECT * FROM payment_types")
+            cursor.execute("SELECT * FROM rate_codes")
             return cursor.fetchall()
 
-    def get_by_id(self, payment_type_id):
+    def get_by_id(self, rate_code_id):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cursor:
-            cursor.execute("SELECT * FROM payment_types WHERE id = %s", (payment_type_id,))
+            cursor.execute('SELECT * FROM rate_codes WHERE "RatecodeID"  = %s', (rate_code_id,))
             item = cursor.fetchone()
             if item is None:
-                raise CustomException("Payment type not found", 404)
+                raise CustomException("Rate code not found", 404)
 
             return item
 
-    def remove_by_id(self, payment_type_id):
+
+    def remove_by_id(self, rate_code_id):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cursor:
             try:
-                cursor.execute("DELETE FROM payment_types WHERE id = %s", (payment_type_id,))
+                cursor.execute('DELETE FROM rate_codes WHERE "RatecodeID" = %s', (rate_code_id,))
                 self.conn.commit()
             except Exception as e:
                 self.conn.rollback()
@@ -35,19 +36,19 @@ class PtPgRepository(PtRepository):
     def add(self, req_data):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cursor:
             try:
-                cursor.execute("INSERT INTO payment_types(payment_type) VALUES(%s) RETURNING id",
-                               (req_data['payment_type'],))
+                cursor.execute('INSERT INTO rate_codes(code) VALUES(%s) RETURNING "RatecodeID"',
+                               (req_data['code'],))
                 self.conn.commit()
-                return cursor.fetchone()['id']
+                return cursor.fetchone()['RatecodeID']
             except Exception as e:
                 self.conn.rollback()
                 raise e
 
-    def edit(self, payment_type_id, req_data):
+    def edit(self, rate_code_id, req_data):
         with self.conn.cursor(cursor_factory=RealDictCursor) as cursor:
             try:
-                cursor.execute("UPDATE payment_types SET payment_type = %s WHERE id = %s",
-                               (req_data['payment_type'], payment_type_id))
+                cursor.execute('UPDATE rate_codes SET code = %s WHERE "RatecodeID" = %s',
+                               (req_data['code'], rate_code_id))
                 self.conn.commit()
                 return req_data
             except Exception as e:

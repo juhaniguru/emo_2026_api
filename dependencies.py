@@ -5,6 +5,7 @@ import psycopg2
 
 from factories.boroughs import create_boroughs_repo, create_boroughs_service
 from factories.pt import create_pt_repo, create_pt_service
+from factories.rate_codes import create_rt_repo, create_rt_service
 
 
 @contextlib.contextmanager
@@ -33,6 +34,16 @@ def get_boroughs_service(func):
         with get_db_conn() as conn:
             repo = create_boroughs_repo(conn)
             service = create_boroughs_service(repo)
+            return func(service, *args, **kwargs)
+
+    return wrapper
+
+
+def get_rt_service(func):
+    def wrapper(*args, **kwargs):
+        with get_db_conn() as conn:
+            repo = create_rt_repo(conn)
+            service = create_rt_service(repo)
             return func(service, *args, **kwargs)
 
     return wrapper
