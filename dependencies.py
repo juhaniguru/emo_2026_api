@@ -7,6 +7,7 @@ from factories.boroughs import create_boroughs_repo, create_boroughs_service
 from factories.pt import create_pt_repo, create_pt_service
 from factories.rate_codes import create_rt_repo, create_rt_service
 from factories.service_zones import create_sz_repo, create_sz_service
+from factories.vendors import create_vendors_repo, create_vendors_service
 
 
 @contextlib.contextmanager
@@ -55,6 +56,15 @@ def get_sz_service(func):
         with get_db_conn() as conn:
             repo = create_sz_repo(conn)
             service = create_sz_service(repo)
+            return func(service, *args, **kwargs)
+
+    return wrapper
+
+def get_vendors_service(func):
+    def wrapper(*args, **kwargs):
+        with get_db_conn() as conn:
+            repo = create_vendors_repo(conn)
+            service = create_vendors_service(repo)
             return func(service, *args, **kwargs)
 
     return wrapper
